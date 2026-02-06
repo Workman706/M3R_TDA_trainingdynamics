@@ -1,0 +1,50 @@
+# ── Task / Data ──
+task:
+  name: modular_addition
+  p: 97                    # prime for (a+b) mod p
+  train_frac: 0.5          # fraction of all p*p pairs used for training
+
+# ── Model ──
+model:
+  name: modular_transformer
+  d_model: 128
+  n_heads: 4
+  n_layers: 2
+  dropout: 0.0
+
+# ── Training ──
+training:
+  seed: 42
+  lr: 1.0e-3
+  weight_decay: 1.0
+  batch_size: 512
+  max_steps: 5000
+  log_every: 100
+
+# ── Snapshots ──
+snapshots:
+  save_every: 500           # save snapshot every N steps
+  output_dir: runs          # base output directory
+  tensor_keys:              # which state_dict keys to analyze (regex patterns)
+    - ".*weight"            # all weight tensors
+
+# ── TDA ──
+tda:
+  filtration:
+    name: lower_star
+    use_abs: true           # use |w| instead of w for filtration values
+    max_dim: 1              # build simplices up to this dimension (1=edges, 2=triangles)
+
+  ph:
+    backend: gudhi
+    max_homology_dim: 1     # compute H0 and H1
+
+  features:
+    betti_grid_size: 100    # number of grid points for Betti curves
+    betti_grid_range: auto  # "auto" = use min/max of filtration values; or [lo, hi]
+    summary_stats: true     # also compute persistence statistics
+
+  timeseries:
+    method: spline
+    smoothing_factor: null  # null = let scipy choose via GCV
+    spline_degree: 3
